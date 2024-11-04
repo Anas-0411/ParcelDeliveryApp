@@ -1,4 +1,4 @@
-const CryptoJS = require("crypto-js");
+const CryptoJs = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const dotenv = require("dotenv");
@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
     age: req.body.age,
     country: req.body.country,
     address: req.body.address,
-    password: CryptoJS.AES.encrypt(
+    password: CryptoJs.AES.encrypt(
       req.body.password,
       process.env.PASS
     ).toString(),
@@ -27,16 +27,17 @@ const registerUser = async (req, res) => {
 
 // LOGIN
 const loginUser = async (req, res) => {
+  console.log("login");
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(401).json("User not found");
     }
-    const hashedPassword = CryptoJS.AES.decrypt(
+    const hashedPassword = CryptoJs.AES.decrypt(
       req.body.password,
       process.env.PASS
     );
-    const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
+    const originalPassword = hashedPassword.toString(CryptoJs.enc.Utf8);
     if (originalPassword !== req.body.password) {
       return res.status(500).json("Wrong Password");
     }
@@ -44,7 +45,7 @@ const loginUser = async (req, res) => {
     const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECERT,
-      { expiresIn: "10d" }
+      { expiresIn: "1d" }
     );
     res.status(200).json(...info, accessToken);
   } catch (error) {
